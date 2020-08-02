@@ -8,24 +8,24 @@
 
     <EditText
         android:id="@+id/editItem"
-        android:layout_width="308dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="14dp"
-        android:layout_marginRight="14dp"
-        android:layout_toStartOf="@+id/editButton"
-        android:layout_toLeftOf="@+id/editButton"
+        android:layout_width="match_parent"
+        android:layout_height="63dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="256dp"
         android:ems="10"
         tools:layout_editor_absoluteX="20dp"
         tools:layout_editor_absoluteY="19dp" />
 
     <Button
         android:id="@+id/editButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_below="@+id/editItem"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginEnd="1dp"
-        android:layout_marginRight="1dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginRight="0dp"
         android:text="Edit"
         tools:layout_editor_absoluteX="305dp"
         tools:layout_editor_absoluteY="18dp" />

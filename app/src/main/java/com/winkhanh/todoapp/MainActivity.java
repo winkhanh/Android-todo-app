@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -22,26 +24,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    //key
+    //constrain definition
     public static final String KEY_ITEM_TEXT = "item_text";
     public static final String KEY_ITEM_POSITION = "item_position";
     public static final int EDIT_TEXT_CODE = 18;
+    public static final int ADD_ITEM_CODE = 9;
+
+    //variables
     List<String> items;
-    Button addButton;
-    EditText itemInput;
+
+    //views
     RecyclerView itemsContainer;
     ItemsAdapter itemsAdapter;
+    FloatingActionButton addFAB;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        //match views
         setContentView(R.layout.activity_main);
-        addButton=findViewById(R.id.addButton);
-        itemInput=findViewById(R.id.itemInput);
         itemsContainer=findViewById(R.id.itemsContainer);
-
+        addFAB = findViewById(R.id.addFAB);
+        //load item when starting
         loadItems();
 
+        //Adapter def
         ItemsAdapter.OnLongClickListener onLongClickListener = new ItemsAdapter.OnLongClickListener() {
             @Override
             public void onItemLongClicked(int pos) {
@@ -64,19 +71,15 @@ public class MainActivity extends AppCompatActivity {
         itemsContainer.setAdapter(itemsAdapter);
         itemsContainer.setLayoutManager(new LinearLayoutManager(this));
 
-        addButton.setOnClickListener(new View.OnClickListener(){
+        addFAB.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
-                String item=itemInput.getText().toString();
-                items.add(item);
-                itemsAdapter.notifyItemInserted(items.size()-1);
-                saveItems();
-                itemInput.setText("");
-                Toast.makeText(getApplicationContext(),"Item was added", Toast.LENGTH_SHORT).show();
-
+                Intent i = new Intent(MainActivity.this, AddActivity.class);
+                startActivityForResult(i,ADD_ITEM_CODE);
             }
         });
+
     }
 
     @Override
@@ -87,7 +90,14 @@ public class MainActivity extends AppCompatActivity {
             items.set(pos,item);
             itemsAdapter.notifyItemChanged(pos);
             saveItems();
-        }else{
+            Toast.makeText(getApplicationContext(),"Item was editted", Toast.LENGTH_SHORT).show();
+        }else if (resultCode == RESULT_OK && requestCode == ADD_ITEM_CODE){
+            String item = data.getStringExtra((KEY_ITEM_TEXT));
+            items.add(item);
+            itemsAdapter.notifyItemInserted((items.size()-1));
+            saveItems();
+            Toast.makeText(getApplicationContext(),"Item was added", Toast.LENGTH_SHORT).show();
+        } else{
             Log.w("MainActivity","Unknown call to onActivityResult");
         }
     }
