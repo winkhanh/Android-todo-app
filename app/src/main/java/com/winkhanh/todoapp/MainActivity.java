@@ -1,9 +1,11 @@
 package com.winkhanh.todoapp;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    //key
+    public static final String KEY_ITEM_TEXT = "item_text";
+    public static final String KEY_ITEM_POSITION = "item_position";
+    public static final int EDIT_TEXT_CODE = 18;
     List<String> items;
     Button addButton;
     EditText itemInput;
@@ -27,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     ItemsAdapter itemsAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         addButton=findViewById(R.id.addButton);
@@ -43,7 +50,17 @@ public class MainActivity extends AppCompatActivity {
                 saveItems();
             }
         };
-        itemsAdapter = new ItemsAdapter(items, onLongClickListener);
+        ItemsAdapter.OnClickListener onClickListener = new ItemsAdapter.OnClickListener() {
+            @Override
+            public void onItemClicked(int pos) {
+                Intent i = new Intent(MainActivity.this, EditActivity.class);
+                i.putExtra(KEY_ITEM_POSITION,pos);
+                i.putExtra(KEY_ITEM_TEXT,items.get(pos));
+
+                startActivityForResult(i,EDIT_TEXT_CODE);
+            }
+        };
+        itemsAdapter = new ItemsAdapter(items, onLongClickListener, onClickListener);
         itemsContainer.setAdapter(itemsAdapter);
         itemsContainer.setLayoutManager(new LinearLayoutManager(this));
 
@@ -61,6 +78,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (resultCode == RESULT_OK && requestCode == EDIT_TEXT_CODE){
+            String item = data.getStringExtra(KEY_ITEM_TEXT);
+            int pos = data.getExtras().getInt(KEY_ITEM_POSITION);
+            items.set(pos,item);
+            itemsAdapter.notifyItemChanged(pos);
+            saveItems();
+        }else{
+            Log.w("MainActivity","Unknown call to onActivityResult");
+        }
+    }
+
     private File getDataFile(){
         return new File(getFilesDir(), "data.txt");
     }
